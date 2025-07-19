@@ -42,7 +42,7 @@ export const getToken = () => {
   return null
 }
 
-const API_BASE_URL = "https://api-zo3lscaxfq-uc.a.run.app/api"
+const API_BASE_URL = "https://api-zwx65dnexa-uc.a.run.app"
 
 
 export async function fetchAPI(endpoint: string, options: RequestInit = {}) {
