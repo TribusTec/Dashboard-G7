@@ -2,10 +2,12 @@
 
 import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useTheme } from "next-themes"
 import { useAuth } from "@/context/authContext"
+import { useState } from "react"
 import {
   Menu,
   LayoutDashboardIcon,
@@ -20,6 +22,10 @@ import {
   MoreHorizontal,
   GraduationCap,
   Folders,
+  Settings,
+  ChevronDown,
+  Smartphone,
+  Monitor,
 } from "lucide-react"
 import Logo from "@/assets/logo.svg"
 import LogoD from "@/assets/logoD.svg"
@@ -39,6 +45,7 @@ export function Sidebar() {
   const pathname = usePathname()
   const { logout, user } = useAuth()
   const { setTheme, theme } = useTheme()
+  const [isConfigOpen, setIsConfigOpen] = useState(false)
 
   const appVersion = "1.8"
 
@@ -47,10 +54,52 @@ export function Sidebar() {
     return pathname === href || pathname.startsWith(href + "/")
   }
 
+  const isConfigActive = () => {
+    return pathname?.startsWith("/Configuracoes") || false
+  }
+
   const getUserInitials = (name?: string) => {
     if (!name) return "U"
     return name.charAt(0).toUpperCase()
   }
+
+  const ConfigSection = () => (
+    <Collapsible open={isConfigOpen} onOpenChange={setIsConfigOpen}>
+      <CollapsibleTrigger asChild>
+        <button
+          className={`flex w-full items-center gap-2 relative transition-colors text-muted-foreground hover:text-marca ${
+            isConfigActive()
+              ? "font-bold text-marca before:w-1 before:h-full before:bg-marca before:absolute before:-right-6 before:top-0"
+              : ""
+          }`}
+        >
+          <Settings className="h-5 w-5" />
+          <span>Configurações</span>
+          <ChevronDown className={`ml-auto h-4 w-4 transition-transform ${isConfigOpen ? "rotate-180" : ""}`} />
+        </button>
+      </CollapsibleTrigger>
+      <CollapsibleContent className="ml-7 mt-2 space-y-2">
+        <Link
+          href="/Configuracoes/app"
+          className={`flex items-center gap-2 py-2 px-3 rounded-md text-sm transition-colors hover:bg-muted ${
+            pathname === "/Configuracoes/app" ? "bg-muted text-marca font-medium" : "text-muted-foreground"
+          }`}
+        >
+          <Smartphone className="h-4 w-4" />
+          App
+        </Link>
+        <Link
+          href="/Configuracoes/dashboard"
+          className={`flex items-center gap-2 py-2 px-3 rounded-md text-sm transition-colors hover:bg-muted ${
+            pathname === "/Configuracoes/dashboard" ? "bg-muted text-marca font-medium" : "text-muted-foreground"
+          }`}
+        >
+          <Monitor className="h-4 w-4" />
+          Dashboard
+        </Link>
+      </CollapsibleContent>
+    </Collapsible>
+  )
 
   return (
     <div className="flex w-full flex-col bg-muted">
@@ -128,7 +177,7 @@ export function Sidebar() {
               </TooltipTrigger>
               <TooltipContent side="right">Ranking</TooltipContent>
             </Tooltip>
-            
+
             <Tooltip>
               <TooltipTrigger asChild>
                 <div className="w-full">
@@ -143,7 +192,7 @@ export function Sidebar() {
               <TooltipContent side="right">Aprendizado</TooltipContent>
             </Tooltip>
 
-               <Tooltip>
+            <Tooltip>
               <TooltipTrigger asChild>
                 <div className="w-full">
                   <NavItem
@@ -155,6 +204,15 @@ export function Sidebar() {
                 </div>
               </TooltipTrigger>
               <TooltipContent side="right">Arquivos</TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="w-full">
+                  <ConfigSection />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="right">Configurações</TooltipContent>
             </Tooltip>
           </TooltipProvider>
         </nav>
@@ -235,7 +293,7 @@ export function Sidebar() {
         <header className="sticky top-0 z-30 flex h-16 items-center px-4 border-b border-border bg-background shadow-sm">
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="outline" size="icon" className="sm:hidden">
+              <Button variant="outline" size="icon" className="sm:hidden bg-transparent">
                 <Menu className="h-5 w-5" />
                 <span className="sr-only">Abrir / Fechar Menu</span>
               </Button>
@@ -283,18 +341,24 @@ export function Sidebar() {
                       label="Ranking"
                       isActive={isActive("/Ranking")}
                     />
-                      <NavItem
+
+                    <NavItem
                       href="/Comparacao"
                       icon={<GraduationCap className="h-5 w-5" />}
                       label="Aprendizado"
                       isActive={isActive("/Comparacao")}
                     />
-                        <NavItem
+
+                    <NavItem
                       href="/Arquivos"
                       icon={<Folders className="h-5 w-5" />}
                       label="Arquivos"
                       isActive={isActive("/Arquivos")}
                     />
+
+                    <div className="w-full">
+                      <ConfigSection />
+                    </div>
                   </div>
                 </div>
 
